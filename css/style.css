@@ -1,0 +1,208 @@
+* {
+    padding: 0;
+    margin: 0;
+}
+
+h1 {
+    font-size: 24px;
+
+}
+
+span,
+button {
+    cursor: pointer;
+}
+
+
+.background {
+    height: 50vh;
+    background-color: rgb(240, 103, 103);
+}
+
+input {
+    padding: 15px !important;
+    box-sizing: border-box !important;
+    border: 2px solid #ccc !important;
+    border-radius: 8px !important;
+    font-size: 16px !important;
+    margin-top: 5px !important;
+    display: inline-block;
+    vertical-align: top !important;
+}
+
+.card_center {
+    width: 100%;
+    height: 500px;
+    background-color: white;
+    box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+    border-radius: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.content {
+    margin-top: -150px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+
+.logo-mobile {
+    display: none;
+}
+
+@media screen and (max-width: 600px) {
+    .background {
+        display: none;
+    }
+
+    .card_center {
+        width: 100%;
+        height: 90vh;
+        background-color: white;
+        box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+        border-radius: 10px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+    }
+
+    .content {
+        margin-top: 50px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+    }
+
+    .logo-mobile {
+        padding: 8px;
+        display: block;
+    }
+    .logo-mobile  img{
+        width: 150px;
+    }
+
+    h1 {
+        font-size: 16px;
+
+    }
+
+    .logo {
+        position: absolute;
+        z-index: 1000;
+        padding: 50px;
+    }
+}
+
+
+
+.logo {
+    padding: 50px;
+}
+
+.logo img {
+    width: 150px;
+}
+
+.select_action button {
+    width: 240px;
+    height: 45px;
+    margin: 10px;
+    border-radius: 10px;
+    border: 0;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    padding: 15px;
+}
+
+
+.select_action button span {
+    margin-left: 10px;
+    margin-right: 8px;
+}
+
+.card_center h1 {
+    margin-bottom: 50px;
+}
+
+
+.select_action button:hover {
+    background-color: rgb(240, 103, 103);
+    color: white;
+}
+
+.salve_btn {
+    background-color: red;
+    color: white;
+}
+
+#loading {
+    display: none;
+    /* Esconde o loading inicialmente */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    /* Fundo semi-transparente */
+    z-index: 9999;
+    /* Garante que o loading fique por cima de tudo */
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin: -20px 0 0 -20px;
+    /* Centraliza o spinner */
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #3498db;
+    border-radius: 50%;
+    animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* HEADER PERSONALIZADO */
+header {
+    background: #dc2626 !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+    margin-bottom: 30px;
+}
+header img {
+    height: 40px;
+    filter: brightness(0) invert(1); /* Deixa a logo branca se for PNG com fundo transparente */
+}
+header button {
+    background: none;
+    border: none;
+    margin-right: 10px;
+    cursor: pointer;
+}
+header .material-symbols-outlined {
+    font-size: 2rem;
+    color: #fff !important;
+}
+
+/* Remover margens extras das logos antigas */
+.logo, .logo-mobile { display: none !important; }

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Upload e Processamento de CSV</title>
+    <script src="script.js"></script>
+</head>
+
+<body>
+    <h1>Upload e Processamento de CSV</h1>
+
+    <input type="file" id="csvFileInput" accept=".csv">
+    <button id="uploadButton">Enviar</button>
+
+    <div id="results"></div>
+
+
+    <script>
+        document.getElementById("uploadButton").addEventListener("click", () => {
+            const fileInput = document.getElementById("csvFileInput");
+            const file = fileInput.files[0];
+            uploadAndProcessCSV(file);
+        });
+
+        async function uploadAndProcessCSV(file) {
+            const formData = new FormData();
+            formData.append("file", file);
+
+            try {
+                const response = await fetch("http://127.0.0.1:8000/upload-csv/", {
+                    method: "POST",
+                    body: formData
+                });
+
+                if (!response.ok) {
+                    throw new Error(`Erro na requisição: ${response.status}`);
+                }
+
+                const data = await response.json();
+                displayResults(data.data);
+            } catch (error) {
+                console.error("Erro ao enviar e processar o CSV:", error);
+                displayError(error.message);
+            }
+        }
+
+        function displayResults(data) {
+            const resultsDiv = document.getElementById("results");
+            resultsDiv.innerHTML = "";
+
+            const table = document.createElement("table");
+            const headerRow = table.insertRow();
+
+            // Cabeçalho da tabela (opcional, adapte conforme seus dados)
+            data[0].forEach(header => {
+                const th = document.createElement("th");
+                th.textContent = header;
+                headerRow.appendChild(th);
+            });
+
+            data.forEach(row => {
+                const dataRow = table.insertRow();
+                row.forEach(cell => {
+                    const td = document.createElement("td");
+                    td.textContent = cell;
+                    dataRow.appendChild(td);
+                });
+            });
+
+            resultsDiv.appendChild(table);
+        }
+
+        function displayError(message) {
+            const resultsDiv = document.getElementById("results");
+            resultsDiv.innerHTML = `<p style="color: red;">${message}</p>`;
+        }
+
+    </script>
+</body>
+
+</html>

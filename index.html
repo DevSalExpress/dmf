@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SSW Bar - Tailwind Red Theme</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    .note-card {
+      background-color: #1f2937;
+      border-radius: 0.5rem;
+      padding: 1rem;
+      margin-bottom: 1rem;
+      border-left: 4px solid #dc2626;
+    }
+
+    .quantity-control {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .quantity-btn {
+      background-color: #374151;
+      border: none;
+      color: white;
+      width: 2rem;
+      height: 2rem;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .quantity-input {
+      width: 6rem;
+      text-align: center;
+      background-color: #111827;
+      border: 1px solid #374151;
+      color: white;
+      padding: 0.25rem;
+      border-radius: 0.25rem;
+    }
+
+    .delete-btn {
+      color: #ef4444;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+  </style>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              500: '#dc2626',
+              600: '#b91c1c',
+              700: '#991b1b'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+  <script src="js/jsquery.js"></script>
+  <script src="js/mask.js"></script>
+  <script src="js/xlsx.js"></script>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="alertifyjs/css/alertify.min.css" />
+  <link rel="stylesheet" href="alertifyjs/css/themes/default.min.css" />
+</head>
+
+<body class="bg-gray-900 text-white font-sans min-h-screen">
+
+  <!-- Loading -->
+  <div id="loading" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+    <div class="spinner border-4 border-t-primary-500 rounded-full w-12 h-12 animate-spin"></div>
+  </div>
+
+  <!-- HEADER PERSONALIZADO -->
+  <header class="flex items-center justify-between bg-primary-600 text-white px-5 py-2 shadow mb-8">
+    <button class="back bg-transparent border-none cursor-pointer">
+      <span class="material-symbols-outlined text-xl text-white">arrow_back_ios</span>
+    </button>
+
+    <div class="flex items-center">
+      <img src="https://salexpress.com.br/wp-content/themes/index/assets/images/home/logo.png" alt="Logo" class="h-8 " />
+    </div>
+
+    <div class="flex items-center gap-2">
+      <button id="clear-db-btn" style="display: none;"
+        class="flex items-center gap-1 bg-red-700 hover:bg-red-800 text-white px-2 py-1 rounded text-sm"
+        style="transition: background 0.2s;">
+        <span class="material-symbols-outlined text-sm">delete</span>
+        <span class="hidden sm:inline">Limpar</span>
+      </button>
+
+      <button id="login-btn"
+        class="flex items-center gap-1 bg-red-700 hover:bg-red-800 text-white px-2 py-1 rounded text-sm"
+        style="transition: background 0.2s;">
+        <span class="material-symbols-outlined text-sm">login</span>
+        <span class="hidden sm:inline">Login</span>
+      </button>
+
+      <!-- <button id="sincronizar" class="flex items-center gap-1 bg-blue-700 hover:bg-blue-800 text-white px-2 py-1 rounded text-sm" style="transition: background 0.2s;">
+        <span class="material-symbols-outlined text-sm">update</span>
+        <span class="hidden sm:inline">Sincronizar</span>
+      </button> -->
+    </div>
+  </header>
+
+  <!-- Conteúdo -->
+  <div class="content max-w-4xl mx-auto px-4 sm:px-6 space-y-12">
+    <div class="card_center" id="actions" style="display: flex; flex-direction: column;">
+      <h1 class="text-xl font-bold text-center mb-4">O que deseja fazer?</h1>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="select_action">
+          <button id="scan_button"
+            class="w-full bg-primary-600 hover:bg-primary-700 text-white p-4 rounded flex items-center justify-center gap-2">
+            <span class="material-symbols-outlined">barcode_scanner</span> Escanear Etiqueta
+          </button>
+        </div>
+        <div class="select_action">
+          <button id="excel_button"
+            class="w-full bg-green-600 hover:bg-green-700 text-white p-4 rounded flex items-center justify-center gap-2">
+            <span class="material-symbols-outlined">description</span> Selecionar notas
+          </button>
+        </div>
+        <div class="select_action">
+          <button id="sincronizar"
+            class="w-full bg-blue-600 hover:bg-yellow-700 text-white p-4 rounded flex items-center justify-center gap-2">
+            <span class="material-symbols-outlined">download</span> Sincronizar Dados
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card_center hidden" style="flex-direction: column;" id="scan">
+      <h1 class="back flex items-center gap-2 text-lg font-bold text-white border-b border-gray-700 pb-2">
+      </h1>
+
+      <div class="select_action mb-4" id="placa_div_scan">
+        <input type="text" id="placa" placeholder="Placa"
+          class="w-full p-3 bg-gray-800 border border-gray-600 rounded text-white uppercase" />
+      </div>
+      <div class="select_action mb-4" id="placa_button_scan">
+        <button id="salve_placa" class="salve_btn w-full p-3 bg-green-600 hover:bg-green-700 rounded">Salvar
+          placa</button>
+      </div>
+
+      <div id="input_number_placa" style="display: none;" class="space-y-4">
+        <br>
+        <h5>PLACA: <span id="view_plate" class="font-bold">---</span></h5>
+        <div class="select_action">
+          <input type="text" id="order"  placeholder="Bar Code"
+            class="w-full p-3 bg-gray-800 border border-gray-700 rounded" />
+        </div>
+        <div>ULTIMA ETIQUETA LIDA: <span id="ut"></span></div>
+
+        <table style="width: 100%;">
+          <thead>
+            <tr>
+              <th style="cursor: pointer;" id="totalparaescan">TOTAL</th>
+              <th style="cursor: pointer;" id="escaneados">LIDOS</th>
+              <th style="cursor: pointer;" id="baixarexcel">FALTAM</th>
+              <th style="cursor: pointer; display: none;" id="actionopt">Ação</th>
+            </tr>
+          </thead>
+          <tbody style="text-align: center;">
+            <tr>
+              <td id="totalForScan">0</td>
+              <td id="totalScaned">0</td>
+              <td id="toalNotScaned">0</td>
+              <td id="alterNf" style="display: none;  justify-content: center; align-items: center;">
+                <span class="material-symbols-outlined">
+                  contract_edit
+                </span> Edit
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <!-- <div id="totalparaescan" style="cursor: pointer;" class="text-sm text-gray-300">Total de etiquetas: <span
+            id="totalForScan">0</span></div>
+        <div id="escaneados" style="cursor: pointer;" class="text-sm text-gray-300">Lidos: <span
+            id="totalScaned">0</span></div>
+        <div id="baixarexcel" style="cursor: pointer;" class="text-sm text-gray-300">faltam Escanear: <span
+            id="toalNotScaned">0</span></div>
+        <div id="baixarexcelplaca" style="cursor: pointer;" class="text-sm text-red-500" style="display: none;">
+          Relatório por placa</div> -->
+
+        <div class="select_action">
+          <button id="lancar" style="display: none;"
+            class="w-full bg-primary-600 hover:bg-primary-700 py-3 rounded flex items-center justify-center gap-2">
+            <span class="material-symbols-outlined">play_arrow</span> Lançar dados (SSW)
+          </button>
+        </div>
+        <div class="select_action">
+          <button id="sync"
+            class="w-full bg-blue-600 hover:bg-blue-700 py-3 rounded flex items-center justify-center gap-2">
+            <span class="material-symbols-outlined">play_arrow</span> Sincronizar Dados
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card_center hidden" style="flex-direction: column;" id="excel">
+     <h1 class="back flex items-center gap-2 text-lg font-bold mb-4">
+      </h1>
+      <div class="select_action mb-4" id="placa_div_scan">
+        <input type="text" id="placa_excel" placeholder="Placa"
+          class="w-full p-4 bg-slate-800/50 border border-slate-600/50 rounded-xl uppercase backdrop-blur-sm focus:border-slate-500 focus:ring-2 focus:ring-slate-500/20 transition-all duration-300" />
+      </div>
+
+      <div class="select_action mb-4" id="placa_button_scan">
+        <button id="buscarNotasButton" class="salve_btn w-full p-4 bg-gradient-to-r from-blue-700 to-blue-600 hover:from-blue-600 hover:to-blue-500 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-blue-500/30 backdrop-blur-sm font-medium">
+          <span class="material-symbols-outlined inline-block mr-2">search</span>
+          Buscar Notas
+        </button>
+      </div>
+
+      <div id="notasContainer" style="display: none;" class="mb-4 max-h-96 overflow-y-auto bg-slate-800/30 rounded-xl p-4 border border-slate-600/50">
+        <h3 class="text-lg font-semibold text-center mb-4">Selecione as Notas:</h3>
+        <div class="mb-4 text-center">
+          <label class="inline-flex items-center gap-2 cursor-pointer bg-slate-700/50 px-4 py-2 rounded-lg hover:bg-slate-700 transition-colors">
+            <input type="checkbox" id="selectAllNotas" class="w-5 h-5 rounded border-slate-500 text-primary-600 focus:ring-primary-500">
+            <span class="font-semibold">Selecionar Todas</span>
+          </label>
+        </div>
+        <div id="notasList" class="space-y-3"></div>
+      </div>
+
+      <div class="select_action" id="uploadNotasButton" style="display: none;">
+        <button id="salvarNotasButton" class="salve_btn w-full p-4 bg-gradient-to-r from-green-700 to-green-600 hover:from-green-600 hover:to-green-500 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-green-500/30 backdrop-blur-sm font-medium">
+          <span class="material-symbols-outlined inline-block mr-2">save</span>
+          Salvar Notas Selecionadas
+        </button>
+      </div>
+    </div>
+  </div>
+
+
+  <!-- Modal para edição de notas fiscais -->
+  <div id="editModal" class="fixed inset-0 bg-black bg-opacity-50 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-gray-800 rounded-lg shadow-xl w-full max-w-2xl max-h-[80vh] overflow-y-auto">
+      <div class="p-4 border-b border-gray-700 flex justify-between items-center">
+        <h3 class="text-lg font-semibold">Editar Notas Fiscais - Placa: <span id="modalPlaca"></span></h3>
+        <button id="closeModal" class="text-gray-400 hover:text-white">
+          <span class="material-symbols-outlined">close</span>
+        </button>
+      </div>
+
+      <div class="p-4" id="notesContainer">
+        <!-- As notas serão carregadas aqui dinamicamente -->
+      </div>
+
+      <div class="p-4 border-t border-gray-700 flex justify-end gap-2">
+        <button id="cancelEdit" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 rounded">
+          Cancelar
+        </button>
+        <button id="saveChanges" class="px-4 py-2 bg-primary-600 hover:bg-primary-700 rounded">
+          Salvar Alterações
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Áudios -->
+  <audio src="sons/error.mp3" id="error_son"></audio>
+  <audio src="sons/beep-329314.mp3" id="success_son"></audio>
+  <audio src="sons/beep-warning-6387.mp3" id="element_play_err_nota"></audio>
+
+  <!-- Scripts -->
+  <script src="alertifyjs/alertify.min.js"></script>
+  <script type="module" src="js/actios.mjs"></script>
+  <script type="module" src="js/load/upload/index.mjs"></script>
+  <script type="module" src="js/report/index.js"></script>
+  <script type="module" src="js/config_db/index.mjs"></script>
+  <script type="module" src="js/utils/index.mjs"></script>
+  <script type="module" src="js/load/loadings.mjs"></script>
+  <script type="module" src="js/salve/indexfile.mjs"></script>
+  <script type="module" src="js/editModal.mjs"></script>
+  <script type="module" src="js/index.mjs"></script>
+
+  <!-- Máscara de campos -->
+  <script>
+    $(document).ready(function () {
+      $('#order').mask('AAAAAAAAAAAAAAAAAAAA');
+      $('#placa_excel, #placa').on('input', function () {
+        var maxLength = 7;
+        var currentValue = $(this).val();
+        if (currentValue.length > maxLength) {
+          $(this).val(currentValue.substring(0, maxLength));
+        }
+      });
+    });
+  </script>
+
+
+
+  <script>
+    // Sistema de Login
+    document.addEventListener('DOMContentLoaded', function () {
+      const loginBtn = document.getElementById('login-btn');
+      const adminControls = [
+        document.getElementById('clear-db-btn'),
+        document.getElementById('lancar'),
+        document.getElementById('alterNf'),
+        document.getElementById('actionopt')
+      ];
+
+      // Senha correta (Sal123@)
+      const CORRECT_PASSWORD = 'Sal123@';
+
+      // Verifica se já está logado (persistência de sessão)
+      if (localStorage.getItem('isAuthenticated') === 'true') {
+        showAdminControls();
+      }
+
+      // Evento do botão de login
+      loginBtn.addEventListener('click', function () {
+        if (localStorage.getItem('isAuthenticated')) {
+          logout();
+        } else {
+          showLoginModal();
+        }
+      });
+
+      // Mostrar modal de login
+      function showLoginModal() {
+        alertify.prompt('Autenticação Requerida',
+          'Digite a senha de administrador:',
+          '',
+          function (evt, password) {
+            if (password === CORRECT_PASSWORD) {
+              localStorage.setItem('isAuthenticated', 'true');
+              showAdminControls();
+              alertify.success('Acesso concedido!');
+              updateLoginButton(true);
+            } else {
+              alertify.error('Senha incorreta!');
+            }
+          },
+          function () {
+            alertify.message('Login cancelado');
+          }
+        ).set('type', 'password');
+      }
+
+      // Logout
+      function logout() {
+        localStorage.removeItem('isAuthenticated');
+        hideAdminControls();
+        alertify.message('Você saiu do modo administrador');
+        updateLoginButton(false);
+      }
+
+      // Mostrar controles administrativos
+      function showAdminControls() {
+        adminControls.forEach(control => {
+          if (control) control.style.display = 'flex';
+        });
+        updateLoginButton(true);
+      }
+
+      // Esconder controles administrativos
+      function hideAdminControls() {
+        adminControls.forEach(control => {
+          if (control) control.style.display = 'none';
+        });
+        updateLoginButton(false);
+      }
+
+      // Atualizar aparência do botão de login
+      function updateLoginButton(isLoggedIn) {
+        if (isLoggedIn) {
+          loginBtn.innerHTML = '<span class="material-symbols-outlined text-sm">logout</span><span class="hidden sm:inline">Sair</span>';
+          loginBtn.classList.remove('bg-red-700');
+          loginBtn.classList.add('bg-green-700');
+        } else {
+          loginBtn.innerHTML = '<span class="material-symbols-outlined text-sm">login</span><span class="hidden sm:inline">Login</span>';
+          loginBtn.classList.remove('bg-green-700');
+          loginBtn.classList.add('bg-red-700');
+        }
+      }
+    });
+  </script>
+  <script type="module">
+    import { clearLocalDatabase, clearFirestoreDatabase } from './js/index.mjs';
+    document.addEventListener('DOMContentLoaded', function () {
+      const clearBtn = document.getElementById('clear-db-btn');
+      if (clearBtn) {
+        clearBtn.addEventListener('click', async function () {
+          if (confirm('Tem certeza que deseja limpar TODO o banco de dados (local e nuvem)? Esta ação não pode ser desfeita!')) {
+            clearLocalDatabase();
+            try {
+              clearBtn.disabled = true;
+              clearBtn.innerHTML = '<span class="material-symbols-outlined animate-spin">autorenew</span> Limpando...';
+              await clearFirestoreDatabase();
+              alert('Banco de dados local e nuvem limpos com sucesso!');
+            } catch (e) {
+              alert('Erro ao limpar o banco de dados na nuvem. Veja o console para detalhes.');
+            } finally {
+              location.reload();
+            }
+          }
+        });
+      }
+    });
+  </script>
+
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./service-worker.js')
+          .then(reg => console.log('✅ Service Worker registrado com sucesso:', reg))
+          .catch(err => console.error('❌ Erro ao registrar o Service Worker:', err));
+      });
+    } else {
+      console.warn('❌ Service Worker não suportado neste navegador.');
+    }
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SSW Bar - Tailwind Red Theme</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              500: '#dc2626',
+              600: '#b91c1c',
+              700: '#991b1b'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined" />
+  <script src="js/jsquery.js"></script>
+  <script src="js/mask.js"></script>
+  <script src="js/xlsx.js"></script>
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="alertifyjs/css/alertify.min.css" />
+  <link rel="stylesheet" href="alertifyjs/css/themes/default.min.css" />
+</head>
+
+<body class="bg-gray-900 text-white font-sans min-h-screen">
+
+  <!-- Loading -->
+  <div id="loading" class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+    <div class="spinner border-4 border-t-primary-500 rounded-full w-12 h-12 animate-spin"></div>
+  </div>
+
+  <!-- HEADER PERSONALIZADO -->
+  <header class="flex items-center justify-between bg-primary-600 text-white px-5 py-2 shadow mb-8">
+    <button class="back bg-transparent border-none cursor-pointer">
+      <span class="material-symbols-outlined text-xl text-white">arrow_back_ios</span>
+    </button>
+
+    <div class="flex items-center">
+      <img src="img/logo.webp" alt="Logo" class="h-8 " />
+    </div>
+
+    <div class="flex items-center gap-2">
+      <button id="clear-db-btn"
+        class="flex items-center gap-1 bg-red-700 hover:bg-red-800 text-white px-2 py-1 rounded text-sm"
+        style="transition: background 0.2s;">
+        <span class="material-symbols-outlined text-sm">delete</span>
+        <span class="hidden sm:inline">Limpar</span>
+      </button>
+
+      <!-- <button id="sincronizar" class="flex items-center gap-1 bg-blue-700 hover:bg-blue-800 text-white px-2 py-1 rounded text-sm" style="transition: background 0.2s;">
+        <span class="material-symbols-outlined text-sm">update</span>
+        <span class="hidden sm:inline">Sincronizar</span>
+      </button> -->
+    </div>
+  </header>
+
+  <!-- Conteúdo -->
+  <div class="content max-w-4xl mx-auto px-4 sm:px-6 space-y-12">
+    <div class="card_center" id="actions" style="display: flex; flex-direction: column;">
+      <h1 class="text-xl font-bold text-center mb-4">O que deseja fazer?</h1>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="select_action">
+          <button id="scan_button"
+            class="w-full bg-gradient-to-r from-slate-700 to-slate-600 hover:from-slate-600 hover:to-slate-500 text-white p-6 rounded-xl flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transition-all duration-300 border border-slate-500/30 backdrop-blur-sm">
+            <span class="material-symbols-outlined text-2xl">barcode_scanner</span> 
+            <span class="font-medium">Escanear Etiqueta</span>
+          </button>
+        </div>
+        <div class="select_action">
+          <button id="excel_button"
+            class="w-full bg-gradient-to-r from-slate-700 to-slate-600 hover:from-slate-600 hover:to-slate-500 text-white p-6 rounded-xl flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transition-all duration-300 border border-slate-500/30 backdrop-blur-sm">
+            <span class="material-symbols-outlined text-2xl">description</span> 
+            <span class="font-medium">Subir Excel</span>
+          </button>
+        </div>
+        <div class="select_action">
+          <button id="sincronizar"
+            class="w-full bg-gradient-to-r from-slate-700 to-slate-600 hover:from-slate-600 hover:to-slate-500 text-white p-6 rounded-xl flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transition-all duration-300 border border-slate-500/30 backdrop-blur-sm">
+            <span class="material-symbols-outlined text-2xl">download</span> 
+            <span class="font-medium">Sincronizar Dados</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card_center hidden" style="flex-direction: column;" id="scan">
+      <h1 class="back flex items-center gap-2 text-lg font-bold text-white border-b border-gray-700 pb-2">
+      </h1>
+
+      <div class="select_action mb-4" id="placa_div_scan">
+        <input type="text" id="placa" placeholder="Placa"
+          class="w-full p-4 bg-slate-800/50 border border-slate-600/50 rounded-xl text-white uppercase backdrop-blur-sm focus:border-slate-500 focus:ring-2 focus:ring-slate-500/20 transition-all duration-300" />
+      </div>
+      <div class="select_action mb-4" id="placa_button_scan">
+        <button id="salve_placa" class="salve_btn w-full p-4 bg-gradient-to-r from-slate-700 to-slate-600 hover:from-slate-600 hover:to-slate-500 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-slate-500/30 backdrop-blur-sm font-medium">Salvar
+          placa</button>
+      </div>
+
+      <div id="input_number_placa" style="display: none;" class="space-y-4">
+        <br>
+        <h5>PLACA: <span id="view_plate" class="font-bold">---</span></h5>
+        <div class="select_action">
+          <input type="text" id="order" placeholder="Bar Code"
+            class="w-full p-4 bg-slate-800/50 border border-slate-600/50 rounded-xl backdrop-blur-sm focus:border-slate-500 focus:ring-2 focus:ring-slate-500/20 transition-all duration-300" />
+        </div>
+        <div>Ultima etiqueta lida: <span id="ut"></span></div>
+        <div id="totalparaescan" style="cursor: pointer;" class="text-sm text-gray-300">Total de etiquetas: <span
+            id="totalForScan">0</span></div>
+        <div id="escaneados" style="cursor: pointer;" class="text-sm text-gray-300">Lidos: <span
+            id="totalScaned">0</span></div>
+        <div id="baixarexcel" style="cursor: pointer;" class="text-sm text-gray-300">faltam Escanear: <span
+            id="toalNotScaned">0</span></div>
+        <div id="baixarexcelplaca" style="cursor: pointer;" class="text-sm text-red-500" style="display: none;">
+          Relatório por placa</div>
+
+        <div class="select_action">
+          <button id="lancar"
+            class="w-full bg-gradient-to-r from-slate-700 to-slate-600 hover:from-slate-600 hover:to-slate-500 py-4 rounded-xl flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transition-all duration-300 border border-slate-500/30 backdrop-blur-sm">
+            <span class="material-symbols-outlined text-xl">play_arrow</span> 
+            <span class="font-medium">Lançar dados (SSW)</span>
+          </button>
+        </div>
+        <div class="select_action">
+          <button id="sync"
+            class="w-full bg-gradient-to-r from-slate-700 to-slate-600 hover:from-slate-600 hover:to-slate-500 py-4 rounded-xl flex items-center justify-center gap-3 shadow-lg hover:shadow-xl transition-all duration-300 border border-slate-500/30 backdrop-blur-sm">
+            <span class="material-symbols-outlined text-xl">play_arrow</span> 
+            <span class="font-medium">Sincronizar Dados</span>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card_center hidden" style="flex-direction: column;" id="excel">
+      <h1 class="back flex items-center gap-2 text-lg font-bold mb-4">
+      </h1>
+      <div class="select_action mb-4" id="placa_div_scan">
+        <input type="text" id="placa_excel" placeholder="Placa"
+          class="w-full p-4 bg-slate-800/50 border border-slate-600/50 rounded-xl uppercase backdrop-blur-sm focus:border-slate-500 focus:ring-2 focus:ring-slate-500/20 transition-all duration-300" />
+      </div>
+      <div class="select_action mb-4" id="placa_button_scan">
+        <input type="file" id="csvFileInput" class="w-full p-4 bg-slate-800/50 border border-slate-600/50 rounded-xl backdrop-blur-sm focus:border-slate-500 focus:ring-2 focus:ring-slate-500/20 transition-all duration-300 file:bg-slate-700 file:border-0 file:rounded-lg file:px-4 file:py-2 file:text-white file:hover:bg-slate-600 file:transition-colors" />
+      </div>
+      <div class="select_action" id="placa_button_scan">
+        <button id="uploadButton" class="salve_btn w-full p-4 bg-gradient-to-r from-slate-700 to-slate-600 hover:from-slate-600 hover:to-slate-500 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 border border-slate-500/30 backdrop-blur-sm font-medium">Subir
+          arquivo</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Áudios -->
+  <audio src="sons/error.mp3" id="error_son"></audio>
+  <audio src="sons/success.mp3" id="success_son"></audio>
+  <audio src="sons/beep-warning-6387.mp3" id="element_play_err_nota"></audio>
+
+  <!-- Scripts -->
+  <script src="alertifyjs/alertify.min.js"></script>
+  <script type="module" src="js/actios.mjs"></script>
+  <script type="module" src="js/load/upload/index.mjs"></script>
+  <script type="module" src="js/report/index.js"></script>
+  <script type="module" src="js/config_db/index.mjs"></script>
+  <script type="module" src="js/utils/index.mjs"></script>
+  <script type="module" src="js/load/loadings.mjs"></script>
+  <script type="module" src="js/salve/indexfile.mjs"></script>
+  <script type="module" src="js/index.mjs"></script>
+
+  <!-- Máscara de campos -->
+  <script>
+    $(document).ready(function () {
+      $('#order').mask('AAAAAAAAAAAAAAAAAAAA');
+      $('#placa_excel, #placa').on('input', function () {
+        var maxLength = 7;
+        var currentValue = $(this).val();
+        if (currentValue.length > maxLength) {
+          $(this).val(currentValue.substring(0, maxLength));
+        }
+      });
+    });
+  </script>
+
+  <script type="module">
+    import { clearLocalDatabase, clearFirestoreDatabase } from './js/index.mjs';
+    document.addEventListener('DOMContentLoaded', function () {
+      const clearBtn = document.getElementById('clear-db-btn');
+      if (clearBtn) {
+        clearBtn.addEventListener('click', async function () {
+          if (confirm('Tem certeza que deseja limpar TODO o banco de dados (local e nuvem)? Esta ação não pode ser desfeita!')) {
+            clearLocalDatabase();
+            try {
+              clearBtn.disabled = true;
+              clearBtn.innerHTML = '<span class="material-symbols-outlined animate-spin">autorenew</span> Limpando...';
+              await clearFirestoreDatabase();
+              alert('Banco de dados local e nuvem limpos com sucesso!');
+            } catch (e) {
+              alert('Erro ao limpar o banco de dados na nuvem. Veja o console para detalhes.');
+            } finally {
+              location.reload();
+            }
+          }
+        });
+      }
+    });
+  </script>
+</body>
+
+</html>

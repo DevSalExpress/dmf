@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SSW Bar</title>
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.mask/1.14.16/jquery.mask.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <link rel="manifest" href="manifest.json">
+
+    <!-- include the style -->
+    <link rel="stylesheet" href="alertifyjs/css/alertify.min.css" />
+    <!-- include a theme -->
+    <link rel="stylesheet" href="alertifyjs/css/themes/default.min.css" />
+</head>
+
+<body>
+
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker
+                    .register('service-worker.js')
+                    .then(registration => {
+                        console.log('Service Worker registrado com sucesso:', registration);
+                    })
+                    .catch(error => {
+                        console.error('Falha ao registrar o Service Worker:', error);
+                    });
+            });
+        }
+
+    </script>
+
+
+    <div id="loading">
+        <div class="spinner"></div>
+    </div>
+    <div class="background">
+        <div class="logo">
+            <img src="img/logo.png" alt="" srcset="">
+
+        </div>
+    </div>
+
+    <div class="logo-mobile" style="background-color: red;">
+        <img src="img/logo.png" alt="" srcset="">
+
+    </div>
+    <div class="content">
+        <div class="card_center" id="actions" style="display: flex;">
+            <h1>
+                O que deseja fazer ?
+            </h1>
+            <div class="select_action">
+                <button id="scan_button">
+                    <span class="material-symbols-outlined">
+                        barcode_scanner
+                    </span>Escanear Etiqueta</button>
+            </div>
+
+            <div class="select_action">
+                <button id="excel_button">
+                    <span class="material-symbols-outlined">
+                        description
+                    </span>
+                    Subir excel</button>
+            </div>
+
+
+            <div class="select_action">
+                <button id="sincronizar">
+                    <span class="material-symbols-outlined">
+                        download
+                    </span>
+                    sincronizar</button>
+            </div>
+
+
+        </div>
+
+
+        <div class="card_center" id="scan" style="display: none;">
+            <h1 class="back">
+            </h1>
+            <div class="select_action" id="placa_div_scan">
+                <input type="text" id="placa" style="text-transform: uppercase;" placeholder="Placa">
+            </div>
+            <div class="select_action" id="placa_button_scan">
+                <button id="salve_placa" class="salve_btn">Salvar placa </button>
+            </div>
+
+
+            <div id="input_number_placa" style="display: none;" s>
+                <div class="select_action">
+                    <input type="text" id="order" placeholder="Bar Code ">
+                </div>
+                <br>
+                <div id="totalparaescan"><a href="#">Total de etiquetas: </a><span id="totalForScan">0</span></div>
+                <br>
+                <div id="escaneados"><a href="#">Escaneados: </a> <span id="totalScaned">0</span></div>
+                <br>
+                <div id="baixarexcel"><a href="#">falta Escanear: </a> <span id="toalNotScaned">0</span></div>
+                <br>
+                <div id="baixarexcelplaca" style="display: none;"><a href="#">Relatorio por placa </a> </div>
+                <br>
+                <div class="select_action">
+                    <button id="lancar">
+                        <span class="material-symbols-outlined">
+                            play_arrow
+                        </span>
+                        Lançar dados (SSW)</button>
+                </div>
+            </div>
+        </div>
+
+
+
+        <div class="card_center" id="excel" style="display: none;">
+            <h1 class="back">
+            </h1>
+            <div class="select_action" id="placa_div_scan">
+                <input type="text" style="text-transform: uppercase;" id="placa_excel" placeholder="Placa">
+            </div>
+
+            <div class="select_action" id="placa_button_scan">
+                <button id="buscarNotasButton" class="salve_btn">Buscar Notas </button>
+            </div>
+
+            <div id="notasContainer" style="display: none; margin-top: 20px; max-height: 400px; overflow-y: auto;">
+                <h3 style="text-align: center; margin-bottom: 15px;">Selecione as Notas:</h3>
+                <div style="margin-bottom: 10px; text-align: center;">
+                    <label style="display: inline-flex; align-items: center; gap: 5px; cursor: pointer;">
+                        <input type="checkbox" id="selectAllNotas" style="width: 18px; height: 18px;">
+                        <span style="font-weight: bold;">Selecionar Todas</span>
+                    </label>
+                </div>
+                <div id="notasList"></div>
+            </div>
+
+            <div class="select_action" id="uploadNotasButton" style="display: none;">
+                <button id="salvarNotasButton" class="salve_btn">Salvar Notas Selecionadas</button>
+            </div>
+        </div>
+    </div>
+
+
+    <audio src="sons/error.mp3" id="error_son"></audio>
+    <audio src="sons/success.mp3" id="success_son"></audio>
+
+
+    <script type="module">
+        // Import the functions you need from the SDKs you need
+
+    </script>
+    <script src="alertifyjs/alertify.min.js"></script>
+
+    <script type="module" src="js/actios.mjs"> </script>
+    <script type="module" src="js/index.mjs"></script>
+    <script type="module" src="js/salve/indexfile.mjs"></script>
+
+    <script>
+        $(document).ready(function () {
+            $('#order').mask('AAAAAAAAAAAAAAAAAAAA'); // 20 letras maiúsculas
+
+
+
+            $('#placa_excel').on('input', function () {
+                var maxLength = 7;
+                var currentValue = $(this).val();
+
+                if (currentValue.length > maxLength) {
+                    $(this).val(currentValue.substring(0, maxLength));
+                }
+            });
+
+            $('#placa').on('input', function () {
+                var maxLength = 7;
+                var currentValue = $(this).val();
+
+                if (currentValue.length > maxLength) {
+                    $(this).val(currentValue.substring(0, maxLength));
+                }
+            });
+        });
+
+
+
+    </script>
+
+    <!-- HEADER PERSONALIZADO -->
+    <header style="display: flex; align-items: center; background: #fff; padding: 10px 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">
+        <button onclick="window.history.back()" style="background: none; border: none; margin-right: 10px; cursor: pointer;">
+            <span class="material-symbols-outlined" style="font-size: 2rem; color: #dc2626;">arrow_back_ios</span>
+        </button>
+        <img src="img/logo.png" alt="Logo" style="height: 40px;" />
+    </header>
+
+</body>
+
+</html>

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Árvore de Filhos</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        .a {
+            color: red;
+            font-size: 52px;
+            margin: 0;
+            padding: 0;
+        }
+
+        .o {
+            color: blue;
+            font-size: 52px;
+            margin: 0;
+            padding: 0;
+        }
+
+        .filho-a {
+            color: red;
+            font-size: 32px;
+            margin: 0;
+        }
+
+        .filho-o {
+            color: blue;
+            padding: 0;
+            font-size: 32px;
+        }
+
+
+        .father div {
+
+            width: 250px;
+        }
+
+        /* ... (outros estilos existentes) */
+
+        .line {
+            position: absolute;
+            width: 2px;
+            background-color: black;
+            /* Ou a cor que você preferir */
+            z-index: -1;
+            /* Garante que as linhas fiquem atrás dos elementos */
+        }
+
+        .father {
+            position: relative;
+            /* Para posicionar as linhas em relação ao pai */
+        }
+
+        ul {
+            margin-right: -150px;
+        }
+
+        .father .a {
+            border-left: 1px solid black;
+        }
+
+        .father .o {
+            border-left: 1px solid black;
+        }
+
+        .father .a div {
+            border-bottom: 1px solid black;
+        }
+
+        .father .o div {
+            border-bottom: 1px solid black;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div id="tree-container"></div>
+
+    <script>
+        const ocultar = (tipo) => {
+            // 1. Ocultar os elementos pai com a classe correspondente
+            const elementosPai = document.querySelectorAll(`.${tipo}`);
+            elementosPai.forEach(pai => {
+                pai.style.display = 'none';
+            });
+
+            // 2. Ocultar todos os filhos com a classe correspondente
+            const elementosFilhos = document.querySelectorAll(`.filho-${tipo}`);
+            elementosFilhos.forEach(filho => {
+                filho.style.display = 'none';
+            });
+        };
+        const father = [
+            {
+                tipo: 'father', filhos: [
+                    { tipo: 'a', filhos: [{ tipo: 'a' }, { tipo: 'o' },] },
+                    { tipo: 'o', filhos: [{ tipo: 'o' }, { tipo: 'a', filhos: [{ tipo: 'a', filhos: [{ tipo: 'a' }] }] }, { tipo: 'o' }] },
+                ]
+            }
+
+        ];
+
+        const treeContainer = document.getElementById('tree-container');
+
+        function renderTree(node, container, index) {
+            const nodeElement = document.createElement('div');
+            nodeElement.classList.add(node.tipo);
+
+            const nodeDivElement = document.createElement('div');
+            nodeDivElement.textContent = node.tipo;
+            nodeButtonCreateA = document.createElement('button')
+            nodeButtonCreateO = document.createElement('button')
+            nodeButtonCreateA.textContent = 'Ocutar A'
+            nodeButtonCreateO.textContent = 'Ocutar O'
+            nodeButtonCreateA.id = 'botaoA' + index
+            nodeButtonCreateO.id = 'botaoO' + index
+
+            nodeButtonCreateO.addEventListener('click', () => {
+                // Código a ser executado quando o nó for
+                console.log(`${index}`);
+                alerFilho('o', `pai-${index}`)
+                // ... (outras ações, como abrir um modal, exibir detalhes, etc.)
+            });
+            nodeButtonCreateA.addEventListener('click', () => {
+                // Código a ser executado quando o nó for
+                console.log(`${index}`);
+                alerFilho('a', `pai-${index}`)
+                // ... (outras ações, como abrir um modal, exibir detalhes, etc.)
+            });
+            nodeDivElement.appendChild(nodeButtonCreateA)
+            nodeDivElement.appendChild(nodeButtonCreateO)
+            nodeElement.appendChild(nodeDivElement);
+            nodeElement.id = `pai-${index}`
+            if (node.filhos && node.filhos.length > 0) {
+                const ulElement = document.createElement('ul');
+                let indexdofilhoepai = `${index}`
+                node.filhos.forEach((filho, indexFilho) => renderTree(filho, ulElement, `pai-${indexdofilhoepai}-filho-${indexFilho}`)); // Chamada recursiva
+                nodeElement.appendChild(ulElement);
+            }
+
+            container.appendChild(nodeElement);
+        }
+
+        father.forEach((element, index) => { renderTree(element, treeContainer, index) });
+
+        function alerFilho(tipoa, id) {
+            console.log(tipoa);
+            console.log(id);
+
+            // Hide elements with class 'a' inside the specified id
+            const container = document.getElementById(id);
+            console.log(container)
+            const elements = container.getElementsByClassName(tipoa);
+            for (let i = 0; i < elements.length; i++) {
+                elements[i].style.display = 'none';
+            }
+        }
+
+    </script>
+</body>
+
+</html>

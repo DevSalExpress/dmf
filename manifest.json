@@ -1,0 +1,21 @@
+{
+  "name": "sal - ler etiquetas",
+  "short_name": "sal - ler etiquetas",
+  "description": "Uma aplicação web para ler etiquetas",
+  "start_url": "/index.html",
+  "display": "standalone",
+  "background_color": "#ff3c40",
+  "theme_color": "#ff3c40",
+  "icons": [
+    {
+      "src": "./img/192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "./img/512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}
