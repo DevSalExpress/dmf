@@ -30,9 +30,29 @@ document.addEventListener('DOMContentLoaded', () => {
     const selectAllBtn = document.getElementById("selectAllNotas");
     if (selectAllBtn) {
         selectAllBtn.addEventListener("change", (e) => {
-            const checkboxes = document.querySelectorAll('.nota-checkbox');
+            const checkboxes = document.querySelectorAll('.nota-checkbox:not(.hidden)');
             checkboxes.forEach(checkbox => {
                 checkbox.checked = e.target.checked;
+            });
+        });
+    }
+
+    // Campo de pesquisa
+    const searchInput = document.getElementById("searchNotas");
+    if (searchInput) {
+        searchInput.addEventListener("input", (e) => {
+            const searchTerm = e.target.value.toLowerCase().trim();
+            const notaDivs = document.querySelectorAll('.nota-item');
+            
+            notaDivs.forEach(div => {
+                const text = div.textContent.toLowerCase();
+                if (text.includes(searchTerm)) {
+                    div.style.display = 'block';
+                    div.classList.remove('hidden');
+                } else {
+                    div.style.display = 'none';
+                    div.classList.add('hidden');
+                }
             });
         });
     }
@@ -87,14 +107,21 @@ function exibirNotas(notas) {
     const notasList = document.getElementById("notasList");
     const notasContainer = document.getElementById("notasContainer");
     const uploadButton = document.getElementById("uploadNotasButton");
+    const searchInput = document.getElementById("searchNotas");
     
     notasList.innerHTML = '';
     
+    // Limpa o campo de pesquisa
+    if (searchInput) {
+        searchInput.value = '';
+    }
+    
     notas.forEach((nota, index) => {
         const notaDiv = document.createElement('div');
+        notaDiv.className = 'nota-item';
         notaDiv.style.cssText = `
-            background: #f9fafb;
-            border: 1px solid #e5e7eb;
+            background: #1e293b;
+            border: 1px solid #475569;
             border-radius: 8px;
             padding: 12px;
             margin-bottom: 10px;
@@ -104,11 +131,11 @@ function exibirNotas(notas) {
             <label style="display: flex; align-items: flex-start; gap: 10px; cursor: pointer;">
                 <input type="checkbox" class="nota-checkbox" data-index="${index}" 
                        style="width: 18px; height: 18px; margin-top: 3px; flex-shrink: 0;">
-                <div style="flex: 1;">
-                    <div style="font-weight: bold; font-size: 16px; color: #1f2937; margin-bottom: 5px;">
+                <div style="flex: 1; color: #e2e8f0;">
+                    <div style="font-weight: bold; font-size: 16px; color: #60a5fa; margin-bottom: 5px;">
                         NFe: ${nota.nf_num}
                     </div>
-                    <div style="font-size: 14px; color: #4b5563; line-height: 1.5;">
+                    <div style="font-size: 14px; color: #cbd5e1; line-height: 1.5;">
                         <div><strong>Volumes:</strong> ${nota.Volumes_Total}</div>
                         <div><strong>Destinatário:</strong> ${nota.destinatario_nome}</div>
                         <div><strong>Cidade:</strong> ${nota.cidade}</div>
