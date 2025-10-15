@@ -91,6 +91,21 @@ async function buscarNotasAPI() {
         notasData = await response.json();
         
         if (notasData && notasData.length > 0) {
+            // Ordena as notas por data - do mais novo para o mais velho
+            notasData.sort((a, b) => {
+                // Converte data de "DD/MM/YYYY" para objeto Date
+                const parseData = (dataStr) => {
+                    const [dia, mes, ano] = dataStr.split('/');
+                    return new Date(ano, mes - 1, dia);
+                };
+                
+                const dataA = parseData(a.Data);
+                const dataB = parseData(b.Data);
+                
+                // Ordem decrescente (mais novo primeiro)
+                return dataB - dataA;
+            });
+            
             exibirNotas(notasData);
         } else {
             alertify.alert('Atenção', 'Nenhuma nota encontrada na API.');
